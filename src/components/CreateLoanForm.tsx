@@ -66,14 +66,14 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
       <Card className="bg-gradient-card border-border/50">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground">
-            Criar Nova Oferta de Empréstimo
+            Create New Loan Offer
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="collateral" className="text-sm font-medium">
-                Garantia em KALE
+                KALE Collateral
               </Label>
               <Input
                 id="collateral"
@@ -87,7 +87,7 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
 
             <div className="space-y-2">
               <Label htmlFor="requested" className="text-sm font-medium">
-                Valor Solicitado (USDC)
+                Requested Amount (USDC)
               </Label>
               <Input
                 id="requested"
@@ -102,7 +102,7 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="interest" className="text-sm font-medium">
-                  Taxa de Juros (%)
+                  Interest Rate (%)
                 </Label>
                 <Input
                   id="interest"
@@ -116,7 +116,7 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
 
               <div className="space-y-2">
                 <Label htmlFor="duration" className="text-sm font-medium">
-                  Prazo (dias)
+                  Duration (days)
                 </Label>
                 <Input
                   id="duration"
@@ -141,12 +141,12 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
               {isApproved ? (
                 <>
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  KALE Aprovado
+                  KALE Approved
                 </>
               ) : isLoading ? (
-                "Aprovando..."
+                "Approving..."
               ) : (
-                "Aprovar Gasto de KALE"
+                "Approve KALE Spending"
               )}
             </Button>
 
@@ -156,7 +156,7 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
               onClick={handleCreateOffer}
               disabled={!isApproved || isLoading}
             >
-              {isLoading ? "Criando Oferta..." : "Criar Oferta de Empréstimo"}
+              {isLoading ? "Creating Offer..." : "Create Loan Offer"}
             </Button>
           </div>
         </CardContent>
@@ -166,7 +166,7 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
       <Card className="bg-gradient-card border-border/50">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground">
-            Resumo da Oferta
+            Offer Summary
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -174,10 +174,10 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
           <div className="p-4 bg-muted/30 rounded-lg border border-kale-green/20">
             <div className="flex items-center space-x-2 mb-2">
               <TrendingUp className="w-4 h-4 text-kale-green animate-pulse" />
-              <span className="text-sm text-muted-foreground">Valor Atual da Garantia:</span>
+              <span className="text-sm text-muted-foreground">Current Collateral Value:</span>
             </div>
             <div className="text-2xl font-bold text-kale-green">
-              R$ {collateralValueBRL.toLocaleString('pt-BR', { 
+              ${collateralValueBRL.toLocaleString('en-US', { 
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2 
               })}
@@ -187,14 +187,14 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
           {/* Summary Details */}
           <div className="space-y-4">
             <div className="flex justify-between items-center p-3 bg-background/30 rounded-lg">
-              <span className="text-sm text-muted-foreground">Montante Total a Pagar:</span>
+              <span className="text-sm text-muted-foreground">Total Amount to Pay:</span>
               <span className="font-semibold text-foreground">
                 {totalToPayback.toFixed(2)} USDC
               </span>
             </div>
 
             <div className="flex justify-between items-center p-3 bg-background/30 rounded-lg">
-              <span className="text-sm text-muted-foreground">Razão de Garantia:</span>
+              <span className="text-sm text-muted-foreground">Collateral Ratio:</span>
               <div className="flex items-center space-x-2">
                 <Badge 
                   variant={collateralizationRatio >= 120 ? "default" : "destructive"}
@@ -213,7 +213,7 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
               <div className="flex items-start space-x-2 p-3 bg-warning/10 border border-warning/30 rounded-lg">
                 <AlertCircle className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
                 <div className="text-xs text-warning">
-                  Garantia insuficiente. É recomendado pelo menos 120% de garantia para atrair credores.
+                  Insufficient collateral. At least 120% collateral is recommended to attract lenders.
                 </div>
               </div>
             )}
@@ -221,7 +221,7 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
             <div className="flex items-center space-x-2 p-3 bg-background/30 rounded-lg">
               <Clock className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                Prazo: {formData.duration || "0"} dias
+                Duration: {formData.duration || "0"} days
               </span>
             </div>
           </div>

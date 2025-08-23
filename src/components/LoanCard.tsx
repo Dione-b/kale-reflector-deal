@@ -40,11 +40,11 @@ export const LoanCard = ({ loan, onFund, className }: LoanCardProps) => {
             variant={isCollateralized ? "default" : "destructive"} 
             className="bg-success/20 text-success border-success/30"
           >
-            {isCollateralized ? "Bem Garantido" : "Risco Alto"}
+            {isCollateralized ? "Well Secured" : "High Risk"}
           </Badge>
           <div className="flex items-center text-xs text-muted-foreground">
             <Clock className="w-3 h-3 mr-1" />
-            {loan.duration} dias
+            {loan.duration} days
           </div>
         </div>
         
@@ -53,7 +53,7 @@ export const LoanCard = ({ loan, onFund, className }: LoanCardProps) => {
             {loan.requestedAmount} <span className="text-base text-muted-foreground">{loan.requestedToken}</span>
           </div>
           <div className="text-sm text-muted-foreground">
-            Garantia: {loan.collateralAmount} {loan.collateralToken}
+            Collateral: {loan.collateralAmount} {loan.collateralToken}
           </div>
         </div>
       </CardHeader>
@@ -63,7 +63,7 @@ export const LoanCard = ({ loan, onFund, className }: LoanCardProps) => {
         <div className="p-3 bg-muted/30 rounded-lg border border-kale-green/20">
           <div className="flex items-center space-x-2">
             <TrendingUp className="w-4 h-4 text-kale-green animate-pulse" />
-            <span className="text-sm text-muted-foreground">Valor Atual da Garantia:</span>
+            <span className="text-sm text-muted-foreground">Current Collateral Value:</span>
           </div>
           <div className="text-lg font-semibold text-kale-green">
             R$ {loan.collateralValueBRL.toLocaleString('pt-BR', { 
@@ -76,17 +76,17 @@ export const LoanCard = ({ loan, onFund, className }: LoanCardProps) => {
         {/* Loan Terms */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Taxa de Juros:</span>
+            <span className="text-sm text-muted-foreground">Interest Rate:</span>
             <span className="font-semibold text-foreground">{loan.interestRate}%</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Valor Total a Receber:</span>
+            <span className="text-sm text-muted-foreground">Total to Receive:</span>
             <span className="font-semibold text-foreground">
               {(loan.requestedAmount * (1 + loan.interestRate / 100)).toFixed(2)} {loan.requestedToken}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Razão de Garantia:</span>
+            <span className="text-sm text-muted-foreground">Collateral Ratio:</span>
             <div className="flex items-center space-x-1">
               <span className="font-semibold text-foreground">
                 {((loan.collateralValueBRL / loan.requestedAmount) * 100).toFixed(0)}%
@@ -104,7 +104,7 @@ export const LoanCard = ({ loan, onFund, className }: LoanCardProps) => {
           onClick={() => onFund?.(loan.id)}
         >
           <Zap className="w-4 h-4 mr-2 group-hover:animate-pulse" />
-          Financiar Oferta
+          Fund Offer
         </Button>
       </CardFooter>
     </Card>

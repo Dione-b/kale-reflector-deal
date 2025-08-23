@@ -80,9 +80,9 @@ export const MarketView = ({ className }: MarketViewProps) => {
     return (
       <div className={cn("space-y-6", className)}>
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-foreground">Criar Nova Oferta</h1>
+          <h1 className="text-3xl font-bold text-foreground">Create New Offer</h1>
           <Button variant="outline" onClick={() => setShowCreateForm(false)}>
-            Voltar ao Mercado
+            Back to Market
           </Button>
         </div>
         <CreateLoanForm onCreateLoan={handleCreateLoan} />
@@ -96,14 +96,14 @@ export const MarketView = ({ className }: MarketViewProps) => {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Explore Ofertas de Empréstimo</h1>
+            <h1 className="text-3xl font-bold text-foreground">Explore Loan Offers</h1>
             <p className="text-muted-foreground">
-              Encontre oportunidades de empréstimo garantidas por KALE com valores atualizados em tempo real
+              Find KALE-backed lending opportunities with real-time collateral values
             </p>
           </div>
           <Button variant="kale" onClick={() => setShowCreateForm(true)}>
             <Plus className="w-4 h-4 mr-2" />
-            Criar Oferta
+            Create Offer
           </Button>
         </div>
 
@@ -112,18 +112,18 @@ export const MarketView = ({ className }: MarketViewProps) => {
           <div className="p-4 bg-gradient-card rounded-lg border border-border/50">
             <div className="flex items-center space-x-2">
               <TrendingUp className="w-4 h-4 text-kale-green" />
-              <span className="text-sm text-muted-foreground">TVL Total</span>
+              <span className="text-sm text-muted-foreground">Total TVL</span>
             </div>
-            <div className="text-xl font-bold text-foreground">R$ 3.000,12</div>
+            <div className="text-xl font-bold text-foreground">$3,000.12</div>
           </div>
           
           <div className="p-4 bg-gradient-card rounded-lg border border-border/50">
-            <div className="text-sm text-muted-foreground">Ofertas Ativas</div>
+            <div className="text-sm text-muted-foreground">Active Offers</div>
             <div className="text-xl font-bold text-foreground">{mockLoans.length}</div>
           </div>
           
           <div className="p-4 bg-gradient-card rounded-lg border border-border/50">
-            <div className="text-sm text-muted-foreground">Taxa Média</div>
+            <div className="text-sm text-muted-foreground">Average Rate</div>
             <div className="text-xl font-bold text-kale-green">
               {(mockLoans.reduce((acc, loan) => acc + loan.interestRate, 0) / mockLoans.length).toFixed(1)}%
             </div>
@@ -135,7 +135,7 @@ export const MarketView = ({ className }: MarketViewProps) => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar por endereço do tomador..."
+              placeholder="Search by borrower address..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-background/50 border-border"
@@ -148,7 +148,7 @@ export const MarketView = ({ className }: MarketViewProps) => {
               size="sm"
               onClick={() => setFilterType("all")}
             >
-              Todas
+              All
             </Button>
             <Button
               variant={filterType === "high-yield" ? "kale" : "outline"}
@@ -156,7 +156,7 @@ export const MarketView = ({ className }: MarketViewProps) => {
               onClick={() => setFilterType("high-yield")}
             >
               <Badge variant="secondary" className="mr-1">5.5%+</Badge>
-              Alto Rendimento
+              High Yield
             </Button>
             <Button
               variant={filterType === "safe" ? "kale" : "outline"}
@@ -164,7 +164,7 @@ export const MarketView = ({ className }: MarketViewProps) => {
               onClick={() => setFilterType("safe")}
             >
               <Badge variant="secondary" className="mr-1">150%+</Badge>
-              Seguras
+              Safe
             </Button>
           </div>
         </div>
@@ -185,12 +185,12 @@ export const MarketView = ({ className }: MarketViewProps) => {
         <div className="text-center py-12">
           <div className="text-muted-foreground mb-4">
             {searchTerm || filterType !== "all" 
-              ? "Nenhuma oferta encontrada com os filtros aplicados" 
-              : "Nenhuma oferta disponível no momento"
+              ? "No offers found with the applied filters" 
+              : "No offers available at the moment"
             }
           </div>
           <Button variant="kale" onClick={() => setShowCreateForm(true)}>
-            Seja o primeiro a criar uma oferta
+            Be the first to create an offer
           </Button>
         </div>
       )}

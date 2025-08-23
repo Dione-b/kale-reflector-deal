@@ -17,8 +17,8 @@ export const Navigation = ({ onWalletConnect, isWalletConnected, walletAddress }
   };
 
   const navItems = [
-    { label: "Mercado", href: "#market", active: true },
-    { label: "Meu Painel", href: "#dashboard", active: false },
+    { label: "Market", href: "#market", active: true },
+    { label: "My Dashboard", href: "#dashboard", active: false },
   ];
 
   return (
@@ -33,7 +33,7 @@ export const Navigation = ({ onWalletConnect, isWalletConnected, walletAddress }
             <span className="text-xl font-bold bg-gradient-kale bg-clip-text text-transparent">
               KALE
             </span>
-            <span className="hidden sm:inline text-muted-foreground">Acordo Feito</span>
+            <span className="hidden sm:inline text-muted-foreground">Deal Done</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -63,7 +63,7 @@ export const Navigation = ({ onWalletConnect, isWalletConnected, walletAddress }
               <Wallet className="w-4 h-4 mr-2" />
               {isWalletConnected && walletAddress
                 ? formatAddress(walletAddress)
-                : "Conectar Carteira"}
+                : "Connect Wallet"}
             </Button>
 
             {/* Mobile Menu Button */}
@@ -111,7 +111,7 @@ export const Navigation = ({ onWalletConnect, isWalletConnected, walletAddress }
                 <Wallet className="w-4 h-4 mr-2" />
                 {isWalletConnected && walletAddress
                   ? formatAddress(walletAddress)
-                  : "Conectar Carteira"}
+                  : "Connect Wallet"}
               </Button>
             </div>
           </div>

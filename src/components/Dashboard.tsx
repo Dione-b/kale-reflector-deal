@@ -89,11 +89,11 @@ export const Dashboard = ({ className }: DashboardProps) => {
                 !isOverdue && !isNearDue && "bg-success/20 text-success border-success/30"
               )}
             >
-              {isOverdue ? "Vencido" : isNearDue ? "Vence em breve" : "Ativo"}
+              {isOverdue ? "Overdue" : isNearDue ? "Due Soon" : "Active"}
             </Badge>
           </div>
           <div className="text-sm text-muted-foreground">
-            Garantia: {debt.collateralAmount} {debt.collateralSymbol}
+            Collateral: {debt.collateralAmount} {debt.collateralSymbol}
           </div>
         </CardHeader>
 
@@ -102,10 +102,10 @@ export const Dashboard = ({ className }: DashboardProps) => {
           <div className="p-3 bg-muted/30 rounded-lg border border-kale-green/20">
             <div className="flex items-center space-x-2">
               <TrendingUp className="w-4 h-4 text-kale-green animate-pulse" />
-              <span className="text-sm text-muted-foreground">Valor da Garantia:</span>
+              <span className="text-sm text-muted-foreground">Collateral Value:</span>
             </div>
             <div className="text-lg font-semibold text-kale-green">
-              R$ {debt.collateralValueBRL.toLocaleString('pt-BR', { 
+              ${debt.collateralValueBRL.toLocaleString('en-US', { 
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2 
               })}
@@ -115,15 +115,15 @@ export const Dashboard = ({ className }: DashboardProps) => {
           {/* Loan Details */}
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total a Pagar:</span>
+              <span className="text-sm text-muted-foreground">Total to Pay:</span>
               <span className="font-semibold">{debt.totalOwed} {debt.tokenSymbol}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Taxa de Juros:</span>
+              <span className="text-sm text-muted-foreground">Interest Rate:</span>
               <span className="font-semibold">{debt.interestRate}%</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Prazo Restante:</span>
+              <span className="text-sm text-muted-foreground">Time Remaining:</span>
               <div className="flex items-center space-x-1">
                 <Clock className={cn(
                   "w-4 h-4",
@@ -133,7 +133,7 @@ export const Dashboard = ({ className }: DashboardProps) => {
                   "font-semibold",
                   isOverdue ? "text-destructive" : isNearDue ? "text-warning" : "text-foreground"
                 )}>
-                  {isOverdue ? "Vencido" : `${debt.daysRemaining} dias`}
+                  {isOverdue ? "Overdue" : `${debt.daysRemaining} days`}
                 </span>
               </div>
             </div>
@@ -147,12 +147,12 @@ export const Dashboard = ({ className }: DashboardProps) => {
             {isOverdue ? (
               <>
                 <AlertTriangle className="w-4 h-4 mr-2" />
-                Pagar Urgente
+                Pay Urgent
               </>
             ) : (
               <>
                 <CheckCircle className="w-4 h-4 mr-2" />
-                Pagar Empréstimo
+                Pay Loan
               </>
             )}
           </Button>
@@ -177,11 +177,11 @@ export const Dashboard = ({ className }: DashboardProps) => {
                 !canLiquidate && "bg-success/20 text-success border-success/30"
               )}
             >
-              {canLiquidate ? "Liquidável" : "Ativo"}
+              {canLiquidate ? "Liquidatable" : "Active"}
             </Badge>
           </div>
           <div className="text-sm text-muted-foreground">
-            Garantia: {loan.collateralAmount} {loan.collateralSymbol}
+            Collateral: {loan.collateralAmount} {loan.collateralSymbol}
           </div>
         </CardHeader>
 
@@ -190,10 +190,10 @@ export const Dashboard = ({ className }: DashboardProps) => {
           <div className="p-3 bg-muted/30 rounded-lg border border-kale-green/20">
             <div className="flex items-center space-x-2">
               <TrendingUp className="w-4 h-4 text-kale-green animate-pulse" />
-              <span className="text-sm text-muted-foreground">Valor da Garantia:</span>
+              <span className="text-sm text-muted-foreground">Collateral Value:</span>
             </div>
             <div className="text-lg font-semibold text-kale-green">
-              R$ {loan.collateralValueBRL.toLocaleString('pt-BR', { 
+              ${loan.collateralValueBRL.toLocaleString('en-US', { 
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2 
               })}
@@ -203,11 +203,11 @@ export const Dashboard = ({ className }: DashboardProps) => {
           {/* Loan Details */}
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Taxa de Juros:</span>
+              <span className="text-sm text-muted-foreground">Interest Rate:</span>
               <span className="font-semibold">{loan.interestRate}%</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Prazo Restante:</span>
+              <span className="text-sm text-muted-foreground">Time Remaining:</span>
               <div className="flex items-center space-x-1">
                 <Clock className={cn(
                   "w-4 h-4",
@@ -217,7 +217,7 @@ export const Dashboard = ({ className }: DashboardProps) => {
                   "font-semibold",
                   canLiquidate ? "text-destructive" : "text-foreground"
                 )}>
-                  {canLiquidate ? "Vencido" : `${loan.daysRemaining} dias`}
+                  {canLiquidate ? "Overdue" : `${loan.daysRemaining} days`}
                 </span>
               </div>
             </div>
@@ -232,10 +232,10 @@ export const Dashboard = ({ className }: DashboardProps) => {
             {canLiquidate ? (
               <>
                 <TrendingDown className="w-4 h-4 mr-2" />
-                Liquidar Garantia
+                Liquidate Collateral
               </>
             ) : (
-              "Aguardando Vencimento"
+              "Awaiting Maturity"
             )}
           </Button>
         </CardContent>
@@ -246,19 +246,19 @@ export const Dashboard = ({ className }: DashboardProps) => {
   return (
     <div className={cn("space-y-6", className)}>
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Meu Painel</h1>
+        <h1 className="text-3xl font-bold text-foreground">My Dashboard</h1>
         <p className="text-muted-foreground">
-          Gerencie seus empréstimos ativos e posições de crédito
+          Manage your active loans and credit positions
         </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-muted/30">
           <TabsTrigger value="debts" className="data-[state=active]:bg-kale-green/20">
-            Minhas Dívidas ({mockDebts.length})
+            My Debts ({mockDebts.length})
           </TabsTrigger>
           <TabsTrigger value="loans" className="data-[state=active]:bg-kale-green/20">
-            Meus Empréstimos ({mockLoans.length})
+            My Loans ({mockLoans.length})
           </TabsTrigger>
         </TabsList>
 
@@ -272,7 +272,7 @@ export const Dashboard = ({ className }: DashboardProps) => {
           ) : (
             <div className="text-center py-12">
               <div className="text-muted-foreground">
-                Você não possui dívidas ativas no momento
+                You have no active debts at the moment
               </div>
             </div>
           )}
@@ -288,7 +288,7 @@ export const Dashboard = ({ className }: DashboardProps) => {
           ) : (
             <div className="text-center py-12">
               <div className="text-muted-foreground">
-                Você não possui empréstimos concedidos no momento
+                You have no loans granted at the moment
               </div>
             </div>
           )}
