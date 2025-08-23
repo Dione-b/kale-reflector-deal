@@ -61,7 +61,29 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// KALE DeFi Colors
+				kale: {
+					green: 'hsl(var(--kale-green))',
+					'dark-green': 'hsl(var(--kale-dark-green))',
+					cyan: 'hsl(var(--kale-cyan))',
+					blue: 'hsl(var(--kale-blue))'
+				},
+				success: 'hsl(var(--success))',
+				warning: 'hsl(var(--warning))'
+			},
+			backgroundImage: {
+				'gradient-kale': 'var(--gradient-kale)',
+				'gradient-card': 'var(--gradient-card)',
+				'gradient-border': 'var(--gradient-border)'
+			},
+			boxShadow: {
+				'glow-kale': 'var(--glow-kale)',
+				'glow-cyan': 'var(--glow-cyan)'
+			},
+			transitionTimingFunction: {
+				'smooth': 'var(--transition-smooth)',
+				'bounce': 'var(--transition-bounce)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

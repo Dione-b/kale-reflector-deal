@@ -1,0 +1,232 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Clock, TrendingUp, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface LoanFormData {
+  collateralAmount: string;
+  requestedAmount: string;
+  interestRate: string;
+  duration: string;
+}
+
+interface CreateLoanFormProps {
+  onCreateLoan?: (data: LoanFormData) => void;
+  className?: string;
+}
+
+export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps) => {
+  const [formData, setFormData] = useState<LoanFormData>({
+    collateralAmount: "",
+    requestedAmount: "",
+    interestRate: "",
+    duration: ""
+  });
+
+  const [isApproved, setIsApproved] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Mock KALE price for Reflector calculation
+  const kalePrice = 0.15; // R$ 0.15 per KALE
+
+  const collateralValueBRL = parseFloat(formData.collateralAmount) * kalePrice || 0;
+  const requestedUSDC = parseFloat(formData.requestedAmount) || 0;
+  const totalToPayback = requestedUSDC * (1 + (parseFloat(formData.interestRate) || 0) / 100);
+  const collateralizationRatio = requestedUSDC > 0 ? (collateralValueBRL / requestedUSDC) * 100 : 0;
+
+  const handleInputChange = (field: keyof LoanFormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleApprove = async () => {
+    setIsLoading(true);
+    // Simulate blockchain transaction
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setIsApproved(true);
+    setIsLoading(false);
+  };
+
+  const handleCreateOffer = async () => {
+    setIsLoading(true);
+    // Simulate blockchain transaction
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    onCreateLoan?.(formData);
+    setIsLoading(false);
+  };
+
+  const isFormValid = Object.values(formData).every(value => value !== "") && collateralizationRatio >= 120;
+
+  return (
+    <div className={cn("grid grid-cols-1 lg:grid-cols-2 gap-6", className)}>
+      {/* Form Section */}
+      <Card className="bg-gradient-card border-border/50">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-foreground">
+            Criar Nova Oferta de Empréstimo
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="collateral" className="text-sm font-medium">
+                Garantia em KALE
+              </Label>
+              <Input
+                id="collateral"
+                type="number"
+                placeholder="Ex: 5000"
+                value={formData.collateralAmount}
+                onChange={(e) => handleInputChange("collateralAmount", e.target.value)}
+                className="bg-background/50 border-border"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="requested" className="text-sm font-medium">
+                Valor Solicitado (USDC)
+              </Label>
+              <Input
+                id="requested"
+                type="number"
+                placeholder="Ex: 100"
+                value={formData.requestedAmount}
+                onChange={(e) => handleInputChange("requestedAmount", e.target.value)}
+                className="bg-background/50 border-border"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="interest" className="text-sm font-medium">
+                  Taxa de Juros (%)
+                </Label>
+                <Input
+                  id="interest"
+                  type="number"
+                  placeholder="Ex: 5"
+                  value={formData.interestRate}
+                  onChange={(e) => handleInputChange("interestRate", e.target.value)}
+                  className="bg-background/50 border-border"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="duration" className="text-sm font-medium">
+                  Prazo (dias)
+                </Label>
+                <Input
+                  id="duration"
+                  type="number"
+                  placeholder="Ex: 30"
+                  value={formData.duration}
+                  onChange={(e) => handleInputChange("duration", e.target.value)}
+                  className="bg-background/50 border-border"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Transaction Buttons */}
+          <div className="space-y-3">
+            <Button
+              variant={isApproved ? "success" : "outline"}
+              className="w-full"
+              onClick={handleApprove}
+              disabled={!isFormValid || isApproved || isLoading}
+            >
+              {isApproved ? (
+                <>
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  KALE Aprovado
+                </>
+              ) : isLoading ? (
+                "Aprovando..."
+              ) : (
+                "Aprovar Gasto de KALE"
+              )}
+            </Button>
+
+            <Button
+              variant="kale"
+              className="w-full"
+              onClick={handleCreateOffer}
+              disabled={!isApproved || isLoading}
+            >
+              {isLoading ? "Criando Oferta..." : "Criar Oferta de Empréstimo"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Summary Section */}
+      <Card className="bg-gradient-card border-border/50">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-foreground">
+            Resumo da Oferta
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Reflector Display */}
+          <div className="p-4 bg-muted/30 rounded-lg border border-kale-green/20">
+            <div className="flex items-center space-x-2 mb-2">
+              <TrendingUp className="w-4 h-4 text-kale-green animate-pulse" />
+              <span className="text-sm text-muted-foreground">Valor Atual da Garantia:</span>
+            </div>
+            <div className="text-2xl font-bold text-kale-green">
+              R$ {collateralValueBRL.toLocaleString('pt-BR', { 
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2 
+              })}
+            </div>
+          </div>
+
+          {/* Summary Details */}
+          <div className="space-y-4">
+            <div className="flex justify-between items-center p-3 bg-background/30 rounded-lg">
+              <span className="text-sm text-muted-foreground">Montante Total a Pagar:</span>
+              <span className="font-semibold text-foreground">
+                {totalToPayback.toFixed(2)} USDC
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center p-3 bg-background/30 rounded-lg">
+              <span className="text-sm text-muted-foreground">Razão de Garantia:</span>
+              <div className="flex items-center space-x-2">
+                <Badge 
+                  variant={collateralizationRatio >= 120 ? "default" : "destructive"}
+                  className={cn(
+                    collateralizationRatio >= 120 
+                      ? "bg-success/20 text-success border-success/30" 
+                      : "bg-destructive/20 text-destructive border-destructive/30"
+                  )}
+                >
+                  {collateralizationRatio.toFixed(0)}%
+                </Badge>
+              </div>
+            </div>
+
+            {collateralizationRatio < 120 && collateralizationRatio > 0 && (
+              <div className="flex items-start space-x-2 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+                <AlertCircle className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
+                <div className="text-xs text-warning">
+                  Garantia insuficiente. É recomendado pelo menos 120% de garantia para atrair credores.
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center space-x-2 p-3 bg-background/30 rounded-lg">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                Prazo: {formData.duration || "0"} dias
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
