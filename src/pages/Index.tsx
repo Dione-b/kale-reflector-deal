@@ -46,6 +46,7 @@ const Index = () => {
         onWalletConnect={handleWalletConnect}
         isWalletConnected={isWalletConnected}
         walletAddress={walletAddress}
+        currentView={currentView}
       />
 
       {/* Main Content */}

@@ -7,9 +7,10 @@ interface NavigationProps {
   onWalletConnect: () => void;
   isWalletConnected: boolean;
   walletAddress?: string;
+  currentView?: "market" | "dashboard";
 }
 
-export const Navigation = ({ onWalletConnect, isWalletConnected, walletAddress }: NavigationProps) => {
+export const Navigation = ({ onWalletConnect, isWalletConnected, walletAddress, currentView = "market" }: NavigationProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const formatAddress = (address: string) => {
@@ -17,8 +18,8 @@ export const Navigation = ({ onWalletConnect, isWalletConnected, walletAddress }
   };
 
   const navItems = [
-    { label: "Market", href: "#market", active: true },
-    { label: "My Dashboard", href: "#dashboard", active: false },
+    { label: "Market", href: "#market", active: currentView === "market" },
+    { label: "My Dashboard", href: "#dashboard", active: currentView === "dashboard" },
   ];
 
   return (

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, TrendingUp, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { readFromLocalStorage, writeToLocalStorage, STORAGE_KEYS } from "@/lib/storage";
 
 interface LoanFormData {
   collateralAmount: string;
@@ -54,6 +55,43 @@ export const CreateLoanForm = ({ onCreateLoan, className }: CreateLoanFormProps)
     setIsLoading(true);
     // Simulate blockchain transaction
     await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      const kalePriceBRL = 0.15;
+      const offers = readFromLocalStorage<any[]>(STORAGE_KEYS.offers, []);
+      const newOffer = {
+        id: `${Date.now()}-${Math.floor(Math.random() * 1e6)}`,
+        borrowerAddress: readFromLocalStorage<string | undefined>(STORAGE_KEYS.walletAddress, undefined) || "0x000000000000000000000000000000000000dEaD",
+        requestedAmount: parseFloat(formData.requestedAmount) || 0,
+        requestedToken: "USDC",
+        collateralAmount: parseFloat(formData.collateralAmount) || 0,
+        collateralToken: "KALE",
+        interestRate: parseFloat(formData.interestRate) || 0,
+        duration: parseInt(formData.duration, 10) || 0,
+        collateralValueBRL: (parseFloat(formData.collateralAmount) || 0) * kalePriceBRL,
+        status: "active" as const,
+      };
+      writeToLocalStorage(STORAGE_KEYS.offers, [newOffer, ...offers]);
+
+      // Also create a debt entry for the borrower so it appears on Dashboard
+      const myDebts = readFromLocalStorage<any[]>(STORAGE_KEYS.myDebts, []);
+      const totalOwed = newOffer.requestedAmount * (1 + newOffer.interestRate / 100);
+      const pendingDebt = {
+        id: `debt-${newOffer.id}`,
+        loanAmount: newOffer.requestedAmount,
+        tokenSymbol: newOffer.requestedToken,
+        collateralAmount: newOffer.collateralAmount,
+        collateralSymbol: newOffer.collateralToken,
+        interestRate: newOffer.interestRate,
+        totalOwed,
+        daysRemaining: newOffer.duration,
+        lenderAddress: "0x0000000000000000000000000000000000000000",
+        collateralValueBRL: newOffer.collateralValueBRL,
+        status: "active" as const,
+      };
+      writeToLocalStorage(STORAGE_KEYS.myDebts, [pendingDebt, ...myDebts]);
+    } catch (_e) {
+      // ignore
+    }
     onCreateLoan?.(formData);
     setIsLoading(false);
   };

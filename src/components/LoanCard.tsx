@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, TrendingUp, Shield, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface LoanOffer {
+export interface LoanOffer {
   id: string;
   borrowerAddress: string;
   requestedAmount: number;
@@ -101,7 +101,6 @@ export const LoanCard = ({ loan, onFund, className }: LoanCardProps) => {
         <Button 
           variant="kale" 
           className="w-full group"
-          onClick={() => onFund?.(loan.id)}
         >
           <Zap className="w-4 h-4 mr-2 group-hover:animate-pulse" />
           Fund Offer

@@ -1,51 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoanCard } from "./LoanCard";
 import { CreateLoanForm } from "./CreateLoanForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Filter, TrendingUp } from "lucide-react";
+import { Plus, Search, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { readFromLocalStorage, writeToLocalStorage, STORAGE_KEYS } from "@/lib/storage";
+import type { LoanOffer } from "./LoanCard";
 
-// Mock data for loan offers
-const mockLoans = [
-  {
-    id: "1",
-    borrowerAddress: "0x742d35cc6798c532cf53de8a200c04b3e2a6c3ef",
-    requestedAmount: 100,
-    requestedToken: "USDC",
-    collateralAmount: 5000,
-    collateralToken: "KALE",
-    interestRate: 5.5,
-    duration: 30,
-    collateralValueBRL: 750.12,
-    status: "active" as const
-  },
-  {
-    id: "2",
-    borrowerAddress: "0x123d35cc6798c532cf53de8a200c04b3e2a6c3ab",
-    requestedAmount: 250,
-    requestedToken: "USDC",
-    collateralAmount: 12000,
-    collateralToken: "KALE",
-    interestRate: 4.8,
-    duration: 45,
-    collateralValueBRL: 1800.00,
-    status: "active" as const
-  },
-  {
-    id: "3",
-    borrowerAddress: "0x456d35cc6798c532cf53de8a200c04b3e2a6c3cd",
-    requestedAmount: 50,
-    requestedToken: "USDC",
-    collateralAmount: 3000,
-    collateralToken: "KALE",
-    interestRate: 6.0,
-    duration: 15,
-    collateralValueBRL: 450.00,
-    status: "active" as const
-  }
-];
+// No mocks: all offers come from localStorage
 
 interface MarketViewProps {
   className?: string;
@@ -55,8 +19,29 @@ export const MarketView = ({ className }: MarketViewProps) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<"all" | "high-yield" | "safe">("all");
+  const [offers, setOffers] = useState<LoanOffer[]>(() => readFromLocalStorage<LoanOffer[]>(STORAGE_KEYS.offers, []));
 
-  const filteredLoans = mockLoans.filter(loan => {
+  useEffect(() => {
+    writeToLocalStorage(STORAGE_KEYS.offers, offers);
+  }, [offers]);
+
+  // One-time migration: remove demo data that may exist from earlier versions
+  useEffect(() => {
+    if (offers.length === 0) return;
+    const demoAddresses = new Set([
+      "0x742d35cc6798c532cf53de8a200c04b3e2a6c3ef",
+      "0x123d35cc6798c532cf53de8a200c04b3e2a6c3ab",
+      "0x456d35cc6798c532cf53de8a200c04b3e2a6c3cd",
+    ]);
+    const allAreDemos = offers.every(o => demoAddresses.has(o.borrowerAddress));
+    if (allAreDemos) {
+      setOffers([]);
+      writeToLocalStorage(STORAGE_KEYS.offers, []);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const filteredLoans = offers.filter(loan => {
     const matchesSearch = loan.borrowerAddress.toLowerCase().includes(searchTerm.toLowerCase());
     
     if (filterType === "high-yield") return matchesSearch && loan.interestRate >= 5.5;
@@ -66,14 +51,55 @@ export const MarketView = ({ className }: MarketViewProps) => {
   });
 
   const handleFundLoan = (loanId: string) => {
-    console.log("Funding loan:", loanId);
-    // Here you would integrate with the smart contract
+    setOffers(prev => {
+      const next = prev.map(o => o.id === loanId ? { ...o, status: "funded" as const } : o);
+      // Persist lender's portfolio
+      const funded = next.find(o => o.id === loanId);
+      if (funded) {
+        const myLoans = readFromLocalStorage<any[]>(STORAGE_KEYS.myLoans, []);
+        const totalOwed = funded.requestedAmount * (1 + funded.interestRate / 100);
+        const lenderAddress = readFromLocalStorage<string | undefined>(STORAGE_KEYS.walletAddress, undefined) || "0x000000000000000000000000000000000000dEaD";
+        const lenderLoan = {
+          id: `myloan-${funded.id}`,
+          loanAmount: funded.requestedAmount,
+          tokenSymbol: funded.requestedToken,
+          collateralAmount: funded.collateralAmount,
+          collateralSymbol: funded.collateralToken,
+          interestRate: funded.interestRate,
+          totalOwed,
+          daysRemaining: funded.duration,
+          borrowerAddress: funded.borrowerAddress,
+          collateralValueBRL: funded.collateralValueBRL,
+          status: "active" as const,
+        };
+        writeToLocalStorage(STORAGE_KEYS.myLoans, [lenderLoan, ...myLoans]);
+
+        // Persist borrower's debt record
+        const myDebts = readFromLocalStorage<any[]>(STORAGE_KEYS.myDebts, []);
+        const borrowerDebt = {
+          id: `debt-${funded.id}`,
+          loanAmount: funded.requestedAmount,
+          tokenSymbol: funded.requestedToken,
+          collateralAmount: funded.collateralAmount,
+          collateralSymbol: funded.collateralToken,
+          interestRate: funded.interestRate,
+          totalOwed,
+          daysRemaining: funded.duration,
+          lenderAddress,
+          collateralValueBRL: funded.collateralValueBRL,
+          status: "active" as const,
+        };
+        writeToLocalStorage(STORAGE_KEYS.myDebts, [borrowerDebt, ...myDebts]);
+      }
+      return next;
+    });
   };
 
-  const handleCreateLoan = (formData: any) => {
-    console.log("Creating loan:", formData);
+  const handleCreateLoan = () => {
+    // The form already persisted the offer. Reload from storage and close form.
+    const saved = readFromLocalStorage<LoanOffer[]>(STORAGE_KEYS.offers, []);
+    setOffers(saved);
     setShowCreateForm(false);
-    // Here you would integrate with the smart contract
   };
 
   if (showCreateForm) {
@@ -89,6 +115,12 @@ export const MarketView = ({ className }: MarketViewProps) => {
       </div>
     );
   }
+
+  const activeOffers = offers.filter(o => o.status === "active");
+  const totalTVL = activeOffers.reduce((acc, o) => acc + (o.collateralValueBRL || 0), 0);
+  const averageRate = activeOffers.length > 0
+    ? activeOffers.reduce((acc, o) => acc + (o.interestRate || 0), 0) / activeOffers.length
+    : 0;
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -114,18 +146,20 @@ export const MarketView = ({ className }: MarketViewProps) => {
               <TrendingUp className="w-4 h-4 text-kale-green" />
               <span className="text-sm text-muted-foreground">Total TVL</span>
             </div>
-            <div className="text-xl font-bold text-foreground">$3,000.12</div>
+            <div className="text-xl font-bold text-foreground">
+              R$ {totalTVL.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
           </div>
           
           <div className="p-4 bg-gradient-card rounded-lg border border-border/50">
             <div className="text-sm text-muted-foreground">Active Offers</div>
-            <div className="text-xl font-bold text-foreground">{mockLoans.length}</div>
+            <div className="text-xl font-bold text-foreground">{activeOffers.length}</div>
           </div>
           
           <div className="p-4 bg-gradient-card rounded-lg border border-border/50">
             <div className="text-sm text-muted-foreground">Average Rate</div>
             <div className="text-xl font-bold text-kale-green">
-              {(mockLoans.reduce((acc, loan) => acc + loan.interestRate, 0) / mockLoans.length).toFixed(1)}%
+              {averageRate.toFixed(1)}%
             </div>
           </div>
         </div>
